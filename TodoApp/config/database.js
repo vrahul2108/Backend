@@ -1,7 +1,9 @@
-///Established connection bw app and DB
+ ///Established connection bw app and DB
 
 const mongoose = require('mongoose');
 require("dotenv").config();
+
+//to feed database url or environment inside the process using dotenv
 
 const dbConnect = ()=>{
     mongoose.connect(process.env.DATABASE_URL)
