@@ -12,11 +12,20 @@ app.use(express.json());
 const todoRoutes = require('./routes/todos');
 
 //mount the todo ASPI routes
-app.use('api/v1', todoRoutes);
+app.use('/api/v1', todoRoutes);
 
+//server start
 app.listen(PORT, ()=> {
     console.log(`Server running on the port ${PORT}`);
 })
 
+
+//connecting the database
 const dbConnect = require('./config/database');
 dbConnect();
+
+//default route
+
+app.get('/', (req, res)=>{
+  res.send(`<h1>This is OUR HOMEPAGE BABYYY`);
+})
