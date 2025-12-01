@@ -50,8 +50,30 @@ exports.signUp = async (req, res) => {
 
 // Placeholder for Login function (to resolve the missing 'login' import in user.js)
 exports.login = async (req, res) => {
-    return res.status(501).json({
-        success: false,
-        message: 'Login route not yet implemented.'
-    });
+    try{
+        //data fetch
+        const {email, password} = req.body;
+
+        if(!email || !password){
+            return res.status(400).json({
+                success: false,
+                message: 'Please fill all the details',
+            })
+        }
+        //user registered or not
+        const user = await User.findOne({email});
+        //if not reg
+
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: 'user id not reg',
+            })
+        }
+        //validating password for token generation
+        
+    }
+    catch{
+
+    }
 };
