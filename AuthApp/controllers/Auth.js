@@ -78,29 +78,38 @@ exports.login = async (req, res) => {
             id : user._id,
         }
         //validating password & token generation
-        if( await bcrypt.compare(password, user.password)){
-            //pass valid going for token gen
-            let token = jwt.sign(payload,process.env.JWT_SECRET,
-                                 {
-                                    expiresIn : "2h",
-                                 })
-            user.token = token;
-            user.password = undefined;
+        if (await bcrypt.compare(password, user.password)) {
+            // Success Block
+            let token = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: "2h",
+            });
+            console.log(user);
             
-            //stores the token in the cookies
-
+            // ... (rest of the cookie setting and response remains the same) ...
+            // user = user.toObject();
+            user.token = token;
+            console.log(user);
+            user.password = undefined; // IMPORTANT: Remove password before sending user object
+            console.log(user);
             const options = {
-                expires : new (Date.now() + 3* 24* 60* 60* 1000),
-                httpOnly  : true,
-            }
+                // FIX: Corrected Date object syntax
+                expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), 
+                httpOnly: true,
+            };
 
-            res.cookie("token", token, options).status(200).json({
+            return res.cookie("token", token, options).status(200).json({ // Use return here
                 success: true,
                 user,
                 token,
                 message: 'User logged in successfully'
             });
 
+        } else {
+            // Failure Block: Password does NOT match
+            return res.status(401).json({ // 401 Unauthorized is appropriate
+                success: false,
+                message: 'Invalid password',
+            });
         }
 
     }
