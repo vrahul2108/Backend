@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); // Added for potential login use
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 // Function for User Sign Up (Note the capital 'S' and 'U')
 exports.signUp = async (req, res) => {
@@ -70,10 +71,43 @@ exports.login = async (req, res) => {
                 message: 'user id not reg',
             })
         }
-        //validating password for token generation
-        
-    }
-    catch{
 
+        const payload = {
+            email : user.email,
+            role : user.role,
+            id : user._id,
+        }
+        //validating password & token generation
+        if( await bcrypt.compare(password, user.password)){
+            //pass valid going for token gen
+            let token = jwt.sign(payload,process.env.JWT_SECRET,
+                                 {
+                                    expiresIn : "2h",
+                                 })
+            user.token = token;
+            user.password = undefined;
+            
+            //stores the token in the cookies
+
+            const options = {
+                expires : new (Date.now() + 3* 24* 60* 60* 1000),
+                httpOnly  : true,
+            }
+
+            res.cookie("token", token, options).status(200).json({
+                success: true,
+                user,
+                token,
+                message: 'User logged in successfully'
+            });
+
+        }
+
+    }
+    catch(e){
+        return res.status(500).json({
+            success: false,
+            message:'Login Failure',
+        })
     }
 };
