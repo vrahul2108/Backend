@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
             })
         }
         //user registered or not
-        const user = await User.findOne({email});
+        let user = await User.findOne({email});
         //if not reg
 
         if(!user){
@@ -86,9 +86,10 @@ exports.login = async (req, res) => {
             console.log(user);
             
             // ... (rest of the cookie setting and response remains the same) ...
-            // user = user.toObject();
+            user = user.toObject();
+              
             user.token = token;
-            console.log(user);
+           console.log(user);
             user.password = undefined; // IMPORTANT: Remove password before sending user object
             console.log(user);
             const options = {
