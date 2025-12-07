@@ -9,6 +9,11 @@ const PORT = process.env.PORT || 4000;
 // Middleware to parse JSON body requests
 app.use(express.json());
 
+
+//cookie-parser
+
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 // Connect to the database
 // The 'connect' function is exported from the database config file
 require('./config/database').connect();

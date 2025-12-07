@@ -5,12 +5,14 @@ require('dotenv').config();
 
 exports.auth = (req, res, next) =>{
     try{
-        const token = req.body.token;
+        console.log(req.cookies.token);
         
-        if(!token){
+        const token =  req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer", "");
+        
+        if(!token || token ===undefined){
             res.status(401).json({
                 success: false,
-                message: 'Toke n Missing'
+                message: 'Token Missing'
             })
         }
 
@@ -52,7 +54,7 @@ exports.isStudent = async(req, res, next)=>{
     }
 }
 
-exports.isAdmin = async(re, res, next)=>{
+exports.isAdmin = async(req, res, next)=>{
     try{
         if(req.user.role != "Admin"){
             return res.status(401).json({
@@ -64,7 +66,7 @@ exports.isAdmin = async(re, res, next)=>{
     }catch(e){
         return res.status(500).json({
                 success: false,
-                message : "User role is not matching",
+                message : "Admin role is not matching",
              })
     }
 }
