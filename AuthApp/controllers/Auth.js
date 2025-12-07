@@ -83,15 +83,15 @@ exports.login = async (req, res) => {
             let token = jwt.sign(payload, process.env.JWT_SECRET, {
                 expiresIn: "2h",
             });
-            console.log(user);
+            // console.log(user);
             
             // ... (rest of the cookie setting and response remains the same) ...
             user = user.toObject();
               
             user.token = token;
-           console.log(user);
+        //    console.log(user);
             user.password = undefined; // IMPORTANT: Remove password before sending user object
-            console.log(user);
+            // console.log(user);
             const options = {
                 // FIX: Corrected Date object syntax
                 expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), 
