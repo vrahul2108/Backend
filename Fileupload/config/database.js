@@ -4,8 +4,8 @@ require("dotenv").config();
 
 //to feed database url or environment inside the process using dotenv
 
-const dbConnect = ()=>{
-    mongoose.connect(process.env.DATABASE_URL)
+const connect = ()=>{
+    mongoose.connect(process.env.MONGODB_URL)
     .then ( ()=> {
         console.log('DB Connection Establish');
     })
@@ -15,3 +15,5 @@ const dbConnect = ()=>{
         process.exit(1);
     })
 }
+
+module.exports = connect;
