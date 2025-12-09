@@ -24,3 +24,28 @@ exports.localFileUpload = async (req, res)=>{
         
     }
 }
+
+
+exports.imageUpload = async(req, res)=>{
+    try{
+
+    }catch(e){
+
+    }
+}
+
+exports.videoUpload = async(req, res)=>{
+    try{
+
+    }catch(e){
+
+    }
+}
+
+exports.imageResizer = async(req, res)=>{
+    try{
+
+    }catch(e){
+
+    }
+}
