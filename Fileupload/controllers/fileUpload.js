@@ -27,14 +27,30 @@ exports.localFileUpload = async (req, res)=>{
 }
 
 function isFileTypeSupported(type, supportedTypes){
-    
     return supportedTypes.includes(type);
-    
 }
 
- async function uploadFileCloudinary(file, folder){
-    const options = { folder };
-    options.resource_type = 'auto'; //Detect the file type yourself and handle it.”
+ async function uploadFileCloudinary(file, folder,quality){
+    const options = { 
+        folder,
+        resource_type : 'auto',
+        transformation:[
+            {
+            width: 600,
+            height: 600,
+            crop: "limit",
+            quality: quality}
+        ]
+     };
+    
+    if(quality){
+        options.transformation.push({
+            width: 600,
+            height: 600,
+            crop: "limit",  // prevents stretching
+            quality: quality
+        });
+    }
     return await cloudinary.uploader.upload(file.tempFilePath, options);
  }
 
@@ -140,10 +156,50 @@ exports.videoUpload = async(req, res)=>{
     }
 }
 
-// exports.imageResizer = async(req, res)=>{
-//     try{
+exports.imageResizer = async(req, res)=>{
+    try{
+        const {name, tags, email} = req.body;
+        console.log(name, tags, email);
 
-//     }catch(e){
+        const file = req.files.imageFile;
+        console.log(file);
 
-//     }
-// }
+        const supportedTypes = [ "png", "jpg", "jpeg"];
+
+        const fileType = file.name.split('.')[1].toLowerCase();
+        // console.log(fileType);
+        
+        if(!isFileTypeSupported(fileType, supportedTypes)){
+            
+            return res.status(400).json({
+                success: false,
+                message:"File Not Supported"
+            })
+        }
+
+        //if file format supported
+        const response = await uploadFileCloudinary(file, "StudyNotion",20);
+        
+        
+        // console.log(response);
+        
+        //db me entry save krte h
+        const fileData = await File.create({
+            name, 
+            tags,
+            email,
+            imageUrl: response.secure_url
+        })
+
+         res.json({
+            success: true,
+            imageUrl: response.secure_url,
+            message: 'Resized Image uploaded'
+         })
+    }catch(e){
+        res.status(400).json({
+            success: false,
+            message: "Something went wrong"
+        })
+    }
+}
