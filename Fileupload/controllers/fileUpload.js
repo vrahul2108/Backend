@@ -34,7 +34,8 @@ function isFileTypeSupported(type, supportedTypes){
 
  async function uploadFileCloudinary(file, folder){
     const options = { folder };
-    return  cloudinary.uploader.upload(file.tempFilePath, options);
+    options.resource_type = 'auto'; //Detect the file type yourself and handle it.”
+    return await cloudinary.uploader.upload(file.tempFilePath, options);
  }
 
 exports.imageUpload = async(req, res)=>{
@@ -69,15 +70,16 @@ exports.imageUpload = async(req, res)=>{
         console.log(response);
         
         //db me entry save krte h
-        // const fileData = await File.create({
-        //     name, 
-        //     tags,
-        //     email,
-        //     imageUrl
-        // })
+        const fileData = await File.create({
+            name, 
+            tags,
+            email,
+            imageUrl: response.secure_url
+        })
 
          res.json({
             success: true,
+            imageUrl: response.secure_url,
             message: 'Image uploaded'
          })
          
@@ -89,13 +91,54 @@ exports.imageUpload = async(req, res)=>{
     }
 }
 
-// exports.videoUpload = async(req, res)=>{
-//     try{
+exports.videoUpload = async(req, res)=>{
+    try{
+        const {name, tags, email} = req.body;
+        console.log(name, tags, email);
 
-//     }catch(e){
+        const file = req.files.videoFile;
+        console.log(file);
 
-//     }
-// }
+        const supportedTypes = [ "mp4", "mvop"];
+
+        const fileType = file.name.split('.')[1].toLowerCase();
+        // console.log(fileType);
+        
+        const maxSize = 10 * 1024 * 1024;
+        if(!isFileTypeSupported(fileType, supportedTypes) || file.size > maxSize ){
+            
+            return res.status(400).json({
+                success: false,
+                message:"File Not Supported"
+            })
+        }
+
+        //if file format supported
+        const response = await uploadFileCloudinary(file, "StudyNotion");
+        
+        
+        // console.log(response);
+        
+        //db me entry save krte h
+        const fileData = await File.create({
+            name, 
+            tags,
+            email,
+            imageUrl: response.secure_url
+        })
+
+         res.json({
+            success: true,
+            imageUrl: response.secure_url,
+            message: 'Image uploaded'
+         })
+    }catch(e){
+        res.status(400).json({
+            success: false,
+            message: "Something went wrong"
+        })
+    }
+}
 
 // exports.imageResizer = async(req, res)=>{
 //     try{

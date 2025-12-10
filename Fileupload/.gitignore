@@ -26,6 +26,8 @@ temp
 .DS_Store
 Thumbs.db
 
+
+readme.txt
 # Environment Variables and Credentials
 # IMPORTANT: Never commit files containing secrets/API keys
 .env
